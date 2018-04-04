@@ -47,18 +47,18 @@ void controll(void){
 
 int menue(void){
 	printf("Bitte waehlen Sie :\n");
-	printf("1 – Berechnung der Quersumme\n");
-	printf("2 – Berechnung Pythagoras\n");
-	printf("3 – Zahl n durch t teilbar\n");
-	printf("4 – Sonst was\n");
-	printf("0 – Ende\n");
+	printf("1 - Berechnung der Quersumme\n");
+	printf("2 - Berechnung Pythagoras\n");
+	printf("3 - Zahl n durch t teilbar\n");
+	printf("4 - Sonst was\n");
+	printf("0 - Ende\n");
 	
 	int user_value = 0;
 	int char_buffer = 0;
 	int pruefe = scanf("%i", &user_value);
 	while ((pruefe != 1) || (user_value < 0) || (user_value > 4)){
 		while ((char_buffer = getchar()) != '\n' && char_buffer != EOF) {}
-		printf("Ungueltige eingabe!\n");
+		printf("Ungueltige eingabe!\nBitte erneut eingeben :");
 		pruefe = scanf("%i", &user_value);
 	}
 	return user_value;
