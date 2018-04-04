@@ -58,7 +58,7 @@ int menue(void){
 	int pruefe = scanf("%i", &user_value);
 	while ((pruefe != 1) || (user_value < 0) || (user_value > 4)){
 		while ((char_buffer = getchar()) != '\n' && char_buffer != EOF) {}
-		printf("Ungueltige eingabe!\n");
+		printf("Ungueltige eingabe!\nBitte erneut eingeben :");
 		pruefe = scanf("%i", &user_value);
 	}
 	return user_value;
