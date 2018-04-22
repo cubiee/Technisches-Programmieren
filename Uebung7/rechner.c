@@ -6,13 +6,13 @@
 #define FALSE 0
 
 void menue(void);
-int check_if_valid_input(char *input[]);
-void kuerzen(int zaehler, int nenner);
+int validate_input(char *input[], int buffer[]);
+void kuerzen(int data_input[]);
 
-void addition(int zaehler1, int nenner1, int zaehler2, int nenner2);
-void subtraktion(int zaehler1, int nenner1, int zaehler2, int nenner2);
-void multiplikation(int zaehler1, int nenner1, int zaehler2, int nenner2);
-void division(int zaehler1, int nenner1, int zaehler2, int nenner2);
+void addition(int data_input[], int data_output[]);
+void subtraktion(int data_input[], int data_output[]);
+void multiplikation(int data_input[], int data_output[]);
+void division(int data_input[], int data_output[]);
 
 int main(int argc, char *argv[]){
 	if (argc < 6 || argc > 6){
@@ -20,25 +20,30 @@ int main(int argc, char *argv[]){
 		return 0;
 	}
 
-	if (check_if_valid_input(argv) == FALSE){
+	int userinput[4] = { 0 };
+
+	if (validate_input(argv, userinput) == FALSE){
 		printf("Ungueltige Zahlenwerte! Kein Integer oder Nenner 1 oder 2 = 0\n");
 		menue();
 		return 0;
 	}
 
+	int ergebnis[4] = { 0 };
+
 	if (strcmp(argv[3], "a") == 0){
-		addition(atoi(argv[1]), atoi(argv[2]), atoi(argv[4]), atoi(argv[5]));
+		addition(userinput, ergebnis);
 	}else if (strcmp(argv[3], "s") == 0){
-		subtraktion(atoi(argv[1]), atoi(argv[2]), atoi(argv[4]), atoi(argv[5]));
+		subtraktion(userinput, ergebnis);
 	}else if (strcmp(argv[3], "m") == 0){
-		multiplikation(atoi(argv[1]), atoi(argv[2]), atoi(argv[4]), atoi(argv[5]));
+		multiplikation(userinput, ergebnis);
 	}else if (strcmp(argv[3], "d") == 0){
-		division(atoi(argv[1]), atoi(argv[2]), atoi(argv[4]), atoi(argv[5]));
+		division(userinput, ergebnis);
 	}else{
 		printf("Ungueltiger Operator!\n");
 		menue();
 	}
-
+	
+	printf("Ungekuerzt: %d/%d\nGekuerzt: %d/%d\n", ergebnis[0], ergebnis[1], ergebnis[2], ergebnis[3]);
 	return 0;
 }
 
@@ -48,7 +53,7 @@ void menue(void){
 	return;
 }
 
-int check_if_valid_input(char *input[]){
+int validate_input(char *input[], int buffer[]){
 	char suchstring[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+,.";
 	//zaehler 1
 	if (strpbrk(input[1], suchstring) != NULL){
@@ -66,69 +71,70 @@ int check_if_valid_input(char *input[]){
 	if ((strpbrk(input[5], suchstring) != NULL) || (atoi(input[5]) == 0)){
 		return FALSE;
 	}
+
+	buffer[0] = atoi(input[1]);
+	buffer[1] = atoi(input[2]);
+	buffer[2] = atoi(input[4]);
+	buffer[3] = atoi(input[5]);
+
 	return TRUE;
 }
 
-void kuerzen(int zaehler, int nenner){
-	if (zaehler % nenner == 0){
-		printf("Gekuerzt  : %i\n", zaehler / nenner);
+void kuerzen(int data_input[]){
+	if (data_input[0] % data_input[1] == 0){
+		data_input[2] = data_input[0] / data_input[1];
+		data_input[3] = 1;
 	}else{
 		int rest;
-		int zahl = zaehler;
-		int teiler = nenner;
+		int zahl = data_input[0];
+		int teiler = data_input[1];
 		do{
 			rest = zahl % teiler;
 			zahl = teiler;
 			teiler = rest;
 		} while (rest != 0);
-		printf("Gekuerzt  : %i/%i\n", zaehler / zahl, nenner / zahl);
+		data_input[2] = data_input[0] / zahl;
+		data_input[3] = data_input[1] / zahl;
 	}
 	return;
 }
 
-void addition(int zaehler1, int nenner1, int zaehler2, int nenner2){
-	int zaehlerergebnis;
-	int nennergebnis;
-	if (nenner1 == nenner2){
-		nennergebnis = nenner1;
-		zaehlerergebnis = zaehler1 + zaehler2;
+void addition(int data_input[], int data_output[]){
+	if (data_input[1] == data_input[3]){
+		data_output[1] = data_input[1];
+		data_output[0] = data_input[0] + data_input[2];
 	}else{
-		zaehlerergebnis = (zaehler1 * nenner2) + (zaehler2 * nenner1);
-		nennergebnis = nenner1 * nenner2;
+		data_output[0] = (data_input[0] * data_input[3]) + (data_input[2] * data_input[1]);
+		data_output[1] = data_input[1] * data_input[3];
 	}
-	printf("Ungekuerzt: %i/%i\n", zaehlerergebnis, nennergebnis);
-	kuerzen(zaehlerergebnis, nennergebnis);
+	kuerzen(data_output);
 	return;
 }
 
-void subtraktion(int zaehler1, int nenner1, int zaehler2, int nenner2){
-	int zaehlerergebnis;
-	int nennergebnis;
-	if (nenner1 == nenner2){
-		nennergebnis = nenner1;
-		zaehlerergebnis = zaehler1 - zaehler2;
+void subtraktion(int data_input[], int data_output[]){
+	if (data_input[1] == data_input[3]){
+		data_output[1] = data_input[1];
+		data_output[0] = data_input[0] - data_input[2];
 	}
 	else{
-		zaehlerergebnis = (zaehler1 * nenner2) - (zaehler2 * nenner1);
-		nennergebnis = nenner1 * nenner2;
+		data_output[0] = (data_input[0] * data_input[3]) - (data_input[2] * data_input[1]);
+		data_output[1] = data_input[1] * data_input[3];
 	}
-	printf("Ungekuerzt: %i/%i\n", zaehlerergebnis, nennergebnis);
-	kuerzen(zaehlerergebnis, nennergebnis);
+	kuerzen(data_output);
 	return;
 }
 
-void multiplikation(int zaehler1, int nenner1, int zaehler2, int nenner2){
-	int zaehlerergebnis = zaehler1 * zaehler2;
-	int nennergebnis = nenner1 * nenner2;
-	printf("Ungekuerzt: %i/%i\n", zaehlerergebnis, nennergebnis);
-	kuerzen(zaehlerergebnis, nennergebnis);
+void multiplikation(int data_input[], int data_output[]){
+	data_output[0] = data_input[0] * data_input[2];
+	data_output[1] = data_input[1] * data_input[3];
+
+	kuerzen(data_output);
 	return;
 }
 
-void division(int zaehler1, int nenner1, int zaehler2, int nenner2){
-	int zaehlerergebnis = zaehler1 * nenner2;
-	int nennergebnis = nenner1 * zaehler2;
-	printf("Ungekuerzt: %i/%i\n", zaehlerergebnis, nennergebnis);
-	kuerzen(zaehlerergebnis, nennergebnis);
+void division(int data_input[], int data_output[]){
+	data_output[0] = data_input[0] * data_input[3];
+	data_output[1] = data_input[1] * data_input[2];
+	kuerzen(data_output);
 	return;
 }
