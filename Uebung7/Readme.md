@@ -1,1 +1,0 @@
-Wurde nie abgegeben !!
