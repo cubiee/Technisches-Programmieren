@@ -27,6 +27,7 @@ int main(int argc, char *argv[]){
 	BRUCH eingabeB;
 	BRUCH ergebnis_UG;
 	BRUCH ergebnis_G;
+
 	if (argc < 6 || argc > 6){
 		menue();
 	}else if (validate_input(argv, &eingabeA, &eingabeB) == FALSE){
@@ -75,28 +76,36 @@ int validate_input(char *input[], BRUCH *bruch1, BRUCH *bruch2){
 		"!\"'$%&'()*+,./:;<=>?@[\\]^_`{|}~"
 	};
 
+	int status;
+
 	if (strpbrk(input[1], suchstring) != NULL){
-		return FALSE;
-	}else if ((strpbrk(input[2], suchstring) != NULL) || (atoi(input[2]) == 0)){
-		return FALSE;
-	}else if (strpbrk(input[4], suchstring) != NULL){
-		return FALSE;
-	}else if ((strpbrk(input[5], suchstring) != NULL) || (atoi(input[5]) == 0)){
-		return FALSE;
-	}else{
+		status = FALSE;
+	}
+	else if ((strpbrk(input[2], suchstring) != NULL) || (atoi(input[2]) == 0)){
+		status = FALSE;
+	}
+	else if (strpbrk(input[4], suchstring) != NULL){
+		status = FALSE;
+	}
+	else if ((strpbrk(input[5], suchstring) != NULL) || (atoi(input[5]) == 0)){
+		status = FALSE;
+	}
+	else{
 		bruch1->zaehler = atoi(input[1]);
 		bruch1->nenner = atoi(input[2]);
 		bruch2->zaehler = atoi(input[4]);
 		bruch2->nenner = atoi(input[5]);
-		return TRUE;
+		status = TRUE;
 	}
+	return status;
 }
 
 void kuerzen(BRUCH ungekuerzt, BRUCH *gekuerzt){
 	if (ungekuerzt.zaehler % ungekuerzt.nenner == 0){
 		gekuerzt->zaehler = ungekuerzt.zaehler / ungekuerzt.nenner;
 		gekuerzt->nenner = 1;
-	}else{
+	}
+	else{
 		int rest;
 		int zahl = ungekuerzt.zaehler;
 		int teiler = ungekuerzt.nenner;
@@ -116,7 +125,8 @@ void ausgabe(BRUCH ungekuerzt, BRUCH gekuerzt){
 	printf("Ungekuerzt: %i/%i\n", ungekuerzt.zaehler, ungekuerzt.nenner);
 	if (gekuerzt.nenner == 1){
 		printf("Gekuerzt  : %i\n", gekuerzt.zaehler);
-	}else{
+	}
+	else{
 		printf("Gekuerzt  : %i/%i\n", gekuerzt.zaehler, gekuerzt.nenner);
 	}
 	return;
@@ -127,7 +137,8 @@ void addition(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis){
 	if (bruch1.nenner == bruch2.nenner){
 		ergebnis->nenner = bruch1.nenner;
 		ergebnis->zaehler = bruch1.zaehler + bruch2.zaehler;
-	}else{
+	}
+	else{
 		ergebnis->zaehler = (bruch1.zaehler * bruch2.nenner) + (bruch2.zaehler * bruch1.nenner);
 		ergebnis->nenner = bruch1.nenner * bruch2.nenner;
 	}
