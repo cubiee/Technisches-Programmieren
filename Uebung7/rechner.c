@@ -11,11 +11,13 @@ typedef struct bruch_s{
 	int nenner;
 } BRUCH;
 
+//helferfunktionen
 void menue(void);
-int validate_input(char *input[], BRUCH *bruch1, BRUCH *bruch2);
+int validate_input(char *input[], BRUCH *bruch1, BRUCH *bruch2); //rueckgabewert bei ungeltigem input = 0
 void kuerzen(BRUCH ungekuerzt, BRUCH *gekuerzt);
 void ausgabe(BRUCH ungekuerzt, BRUCH gekuerzt);
 
+//berechnungsfunktionen
 void addition(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis);
 void subtraktion(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis);
 void multiplikation(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis);
@@ -64,12 +66,15 @@ int main(int argc, char *argv[]){
 
 
 void menue(void){
+	//ausgabe eines hilfepromt für den benutzer
 	printf("Aufruf durch:\n     ./rechner zahler1 nenner1 op zaehler2 nenner2\n");
 	printf("op:\n     a = Addition\n     s = Subtraktion\n     m = Multiplikation\n     d = Division\n");
 	return;
 }
 
 int validate_input(char *input[], BRUCH *bruch1, BRUCH *bruch2){
+	//sucht den input nach verbotenen zeichen ab und ueberprueft ob ein mathematischer fehler vorliegt (nenner = 0) 
+	//danach wird der input in zwei structs umgewandelt
 	char suchstring[] = { 
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		"abcdefghijklmnopqrstuvwxyz"
@@ -101,6 +106,8 @@ int validate_input(char *input[], BRUCH *bruch1, BRUCH *bruch2){
 }
 
 void kuerzen(BRUCH ungekuerzt, BRUCH *gekuerzt){
+	//falls zahler durch nenner ganz teilbar ist wird dividiert und der nenner auf 1 gesetzt
+	//andernfalls wird mittels euklidischer algorythmus der ggt ermittelt
 	if (ungekuerzt.zaehler % ungekuerzt.nenner == 0){
 		gekuerzt->zaehler = ungekuerzt.zaehler / ungekuerzt.nenner;
 		gekuerzt->nenner = 1;
