@@ -5,42 +5,62 @@
 #define TRUE 1
 #define FALSE 0
 
-void menue(void);
-int check_if_valid_input(char *input[]);
-void kuerzen(int zaehler, int nenner);
 
-void addition(int zaehler1, int nenner1, int zaehler2, int nenner2);
-void subtraktion(int zaehler1, int nenner1, int zaehler2, int nenner2);
-void multiplikation(int zaehler1, int nenner1, int zaehler2, int nenner2);
-void division(int zaehler1, int nenner1, int zaehler2, int nenner2);
+typedef struct bruch_s{
+	int zaehler;
+	int nenner;
+} BRUCH;
+
+void menue(void);
+int validate_input(char *input[], BRUCH *bruch1, BRUCH *bruch2);
+void kuerzen(BRUCH ungekuerzt, BRUCH *gekuerzt);
+void ausgabe(BRUCH ungekuerzt, BRUCH gekuerzt);
+
+void addition(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis);
+void subtraktion(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis);
+void multiplikation(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis);
+void division(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis);
+
 
 int main(int argc, char *argv[]){
+	BRUCH eingabeA;
+	BRUCH eingabeB;
+	BRUCH ergebnis_UG;
+	BRUCH ergebnis_G;
 	if (argc < 6 || argc > 6){
 		menue();
-		return 0;
-	}
-
-	if (check_if_valid_input(argv) == FALSE){
+	}else if (validate_input(argv, &eingabeA, &eingabeB) == FALSE){
 		printf("Ungueltige Zahlenwerte! Kein Integer oder Nenner 1 oder 2 = 0\n");
 		menue();
-		return 0;
-	}
-
-	if (strcmp(argv[3], "a") == 0){
-		addition(atoi(argv[1]), atoi(argv[2]), atoi(argv[4]), atoi(argv[5]));
-	}else if (strcmp(argv[3], "s") == 0){
-		subtraktion(atoi(argv[1]), atoi(argv[2]), atoi(argv[4]), atoi(argv[5]));
-	}else if (strcmp(argv[3], "m") == 0){
-		multiplikation(atoi(argv[1]), atoi(argv[2]), atoi(argv[4]), atoi(argv[5]));
-	}else if (strcmp(argv[3], "d") == 0){
-		division(atoi(argv[1]), atoi(argv[2]), atoi(argv[4]), atoi(argv[5]));
 	}else{
-		printf("Ungueltiger Operator!\n");
-		menue();
+		if (strcmp(argv[3], "a") == 0){
+			addition(eingabeA, eingabeB, &ergebnis_UG);
+			kuerzen(ergebnis_UG, &ergebnis_G);
+			ausgabe(ergebnis_UG, ergebnis_G);
+		}
+		else if (strcmp(argv[3], "s") == 0){
+			subtraktion(eingabeA, eingabeB, &ergebnis_UG);
+			kuerzen(ergebnis_UG, &ergebnis_G);
+			ausgabe(ergebnis_UG, ergebnis_G);
+		}
+		else if (strcmp(argv[3], "m") == 0){
+			multiplikation(eingabeA, eingabeB, &ergebnis_UG);
+			kuerzen(ergebnis_UG, &ergebnis_G);
+			ausgabe(ergebnis_UG, ergebnis_G);
+		}
+		else if (strcmp(argv[3], "d") == 0){
+			division(eingabeA, eingabeB, &ergebnis_UG);
+			kuerzen(ergebnis_UG, &ergebnis_G);
+			ausgabe(ergebnis_UG, ergebnis_G);
+		}
+		else{
+			printf("Ungueltiger Operator!\n");
+			menue();
+		}
 	}
-
 	return 0;
 }
+
 
 void menue(void){
 	printf("Aufruf durch:\n     ./rechner zahler1 nenner1 op zaehler2 nenner2\n");
@@ -48,87 +68,92 @@ void menue(void){
 	return;
 }
 
-int check_if_valid_input(char *input[]){
-	char suchstring[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+,.";
-	//zaehler 1
+int validate_input(char *input[], BRUCH *bruch1, BRUCH *bruch2){
+	char suchstring[] = { 
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"!\"'$%&'()*+,./:;<=>?@[\\]^_`{|}~"
+	};
+
 	if (strpbrk(input[1], suchstring) != NULL){
 		return FALSE;
-	}
-	//nenner 1
-	if ((strpbrk(input[2], suchstring) != NULL) || (atoi(input[2]) == 0)){
+	}else if ((strpbrk(input[2], suchstring) != NULL) || (atoi(input[2]) == 0)){
 		return FALSE;
-	}
-	//zaehler 2
-	if (strpbrk(input[4], suchstring) != NULL){
+	}else if (strpbrk(input[4], suchstring) != NULL){
 		return FALSE;
-	}
-	//nenner 2
-	if ((strpbrk(input[5], suchstring) != NULL) || (atoi(input[5]) == 0)){
+	}else if ((strpbrk(input[5], suchstring) != NULL) || (atoi(input[5]) == 0)){
 		return FALSE;
+	}else{
+		bruch1->zaehler = atoi(input[1]);
+		bruch1->nenner = atoi(input[2]);
+		bruch2->zaehler = atoi(input[4]);
+		bruch2->nenner = atoi(input[5]);
+		return TRUE;
 	}
-	return TRUE;
 }
 
-void kuerzen(int zaehler, int nenner){
-	if (zaehler % nenner == 0){
-		printf("Gekuerzt  : %i\n", zaehler / nenner);
+void kuerzen(BRUCH ungekuerzt, BRUCH *gekuerzt){
+	if (ungekuerzt.zaehler % ungekuerzt.nenner == 0){
+		gekuerzt->zaehler = ungekuerzt.zaehler / ungekuerzt.nenner;
+		gekuerzt->nenner = 1;
 	}else{
 		int rest;
-		int zahl = zaehler;
-		int teiler = nenner;
+		int zahl = ungekuerzt.zaehler;
+		int teiler = ungekuerzt.nenner;
 		do{
 			rest = zahl % teiler;
 			zahl = teiler;
 			teiler = rest;
 		} while (rest != 0);
-		printf("Gekuerzt  : %i/%i\n", zaehler / zahl, nenner / zahl);
+		gekuerzt->zaehler = ungekuerzt.zaehler / zahl;
+		gekuerzt->nenner = ungekuerzt.nenner / zahl;
 	}
 	return;
 }
 
-void addition(int zaehler1, int nenner1, int zaehler2, int nenner2){
-	int zaehlerergebnis;
-	int nennergebnis;
-	if (nenner1 == nenner2){
-		nennergebnis = nenner1;
-		zaehlerergebnis = zaehler1 + zaehler2;
+void ausgabe(BRUCH ungekuerzt, BRUCH gekuerzt){
+	printf("Ergebnis:\n");
+	printf("Ungekuerzt: %i/%i\n", ungekuerzt.zaehler, ungekuerzt.nenner);
+	if (gekuerzt.nenner == 1){
+		printf("Gekuerzt  : %i\n", gekuerzt.zaehler);
 	}else{
-		zaehlerergebnis = (zaehler1 * nenner2) + (zaehler2 * nenner1);
-		nennergebnis = nenner1 * nenner2;
+		printf("Gekuerzt  : %i/%i\n", gekuerzt.zaehler, gekuerzt.nenner);
 	}
-	printf("Ungekuerzt: %i/%i\n", zaehlerergebnis, nennergebnis);
-	kuerzen(zaehlerergebnis, nennergebnis);
 	return;
 }
 
-void subtraktion(int zaehler1, int nenner1, int zaehler2, int nenner2){
-	int zaehlerergebnis;
-	int nennergebnis;
-	if (nenner1 == nenner2){
-		nennergebnis = nenner1;
-		zaehlerergebnis = zaehler1 - zaehler2;
+
+void addition(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis){
+	if (bruch1.nenner == bruch2.nenner){
+		ergebnis->nenner = bruch1.nenner;
+		ergebnis->zaehler = bruch1.zaehler + bruch2.zaehler;
+	}else{
+		ergebnis->zaehler = (bruch1.zaehler * bruch2.nenner) + (bruch2.zaehler * bruch1.nenner);
+		ergebnis->nenner = bruch1.nenner * bruch2.nenner;
+	}
+	return;
+}
+
+void subtraktion(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis){
+	if (bruch1.nenner == bruch2.nenner){
+		ergebnis->nenner = bruch1.nenner;
+		ergebnis->zaehler = bruch1.zaehler - bruch2.zaehler;
 	}
 	else{
-		zaehlerergebnis = (zaehler1 * nenner2) - (zaehler2 * nenner1);
-		nennergebnis = nenner1 * nenner2;
+		ergebnis->zaehler = (bruch1.zaehler * bruch2.nenner) - (bruch2.zaehler * bruch1.nenner);
+		ergebnis->nenner = bruch1.nenner * bruch2.nenner;
 	}
-	printf("Ungekuerzt: %i/%i\n", zaehlerergebnis, nennergebnis);
-	kuerzen(zaehlerergebnis, nennergebnis);
 	return;
 }
 
-void multiplikation(int zaehler1, int nenner1, int zaehler2, int nenner2){
-	int zaehlerergebnis = zaehler1 * zaehler2;
-	int nennergebnis = nenner1 * nenner2;
-	printf("Ungekuerzt: %i/%i\n", zaehlerergebnis, nennergebnis);
-	kuerzen(zaehlerergebnis, nennergebnis);
+void multiplikation(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis){
+	ergebnis->zaehler = bruch1.zaehler * bruch2.zaehler;
+	ergebnis->nenner = bruch1.nenner * bruch2.nenner;
 	return;
 }
 
-void division(int zaehler1, int nenner1, int zaehler2, int nenner2){
-	int zaehlerergebnis = zaehler1 * nenner2;
-	int nennergebnis = nenner1 * zaehler2;
-	printf("Ungekuerzt: %i/%i\n", zaehlerergebnis, nennergebnis);
-	kuerzen(zaehlerergebnis, nennergebnis);
+void division(BRUCH bruch1, BRUCH bruch2, BRUCH *ergebnis){
+	ergebnis->zaehler = bruch1.zaehler * bruch2.nenner;
+	ergebnis->nenner = bruch1.nenner * bruch2.zaehler;
 	return;
 }
