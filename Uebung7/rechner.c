@@ -66,7 +66,7 @@ int main(int argc, char *argv[]){
 
 
 void menue(void){
-	//ausgabe eines hilfepromt für den benutzer
+	//ausgabe eines hilfepromt fuer den benutzer
 	printf("Aufruf durch:\n     ./rechner zahler1 nenner1 op zaehler2 nenner2\n");
 	printf("op:\n     a = Addition\n     s = Subtraktion\n     m = Multiplikation\n     d = Division\n");
 	return;
