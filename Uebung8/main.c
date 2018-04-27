@@ -1,13 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #define TRUE 1
 #define FALSE 0
+
+typedef struct main_args_s{
+	char *inputfile_name;
+	char *outputfile_name;
+	int key;
+}MAIN_ARGS;
 
 void menue(void);
 int load_file(char *filename, char **buffer);
 int write_file(char *filename, char *data);
-
+int validate_input(char *input[], MAIN_ARGS *parameter);
 char verschluesseln(char character, int n);
 
 int main(int argc, char *argv[]){
@@ -16,20 +23,27 @@ int main(int argc, char *argv[]){
     }else{
 		char *datei_inhalt;
 		int characters_loaded = 0;
-		if ((characters_loaded = load_file(argv[2], &datei_inhalt)) < 0){
+		MAIN_ARGS input_parameter = {"",""};
+
+		if (validate_input(argv, &input_parameter) == FALSE){
+			printf("Key hat ungueltiges format! Bitte nur integer grösser 0 eingeben!\n");
+			menue();
+		}
+		else if ((characters_loaded = load_file(input_parameter.inputfile_name, &datei_inhalt)) < 0){
 			printf("Eingabedatei konnte nicht geöffnet werden!\n");
 			menue();
 		}
 		else{
 			for (int i = 0; i < characters_loaded; i++){
-				datei_inhalt[i] = verschluesseln(datei_inhalt[i], atoi(argv[1]));
+				datei_inhalt[i] = verschluesseln(datei_inhalt[i], input_parameter.key);
 			}
-			write_file(argv[3], datei_inhalt);
+			if ((write_file(input_parameter.outputfile_name, datei_inhalt)) == FALSE){
+				printf("Ausgabedatei konnte nicht geöffnet werden!\n");
+			}
 		}
     }
     return 0;
 }
-
 
 void menue(void){
 	printf("Aufruf durch:\n");
@@ -67,6 +81,27 @@ int write_file(char *filename, char *data){
 		fclose(datei);
 		return TRUE;
 	}
+}
+
+int validate_input(char *input[], MAIN_ARGS *parameter){
+	char suchstring[] = {
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"!\"'$%&'()*+-,./:;<=>?@[\\]^_`{|}~"
+	};
+
+	int status;
+
+	if ((strpbrk(input[1], suchstring) != NULL) || (atoi(input[1]) == 0)){
+		status = FALSE;
+	}
+	else{
+		parameter->inputfile_name = input[2];
+		parameter->outputfile_name = input[3];
+		parameter->key = atoi(input[1]);
+		status = TRUE;
+	}
+	return status;
 }
 
 char verschluesseln(char character, int key){
