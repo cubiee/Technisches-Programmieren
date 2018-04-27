@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -pedantic -std=c99 -c
-PROGNAME = verschluesselung
+PROGNAME = geheim
 
 all: compile clean
 
