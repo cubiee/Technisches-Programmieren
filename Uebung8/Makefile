@@ -4,9 +4,9 @@ PROGNAME = geheim
 
 all: compile clean
 
-compile: main.o
-	$(CC) -o $(PROGNAME) main.o 
-main.o: main.c
-	$(CC) $(CFLAGS) main.c
+compile: geheim.o
+	$(CC) -o $(PROGNAME) geheim.o 
+geheim.o: geheim.c
+	$(CC) $(CFLAGS) geheim.c
 clean: 
 	rm -f *.o
