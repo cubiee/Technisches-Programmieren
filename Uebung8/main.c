@@ -23,7 +23,7 @@ int main(int argc, char *argv[]){
     }else{
 		char *datei_inhalt;
 		int characters_loaded = 0;
-		MAIN_ARGS input_parameter = {"",""};
+		MAIN_ARGS input_parameter;
 
 		if (validate_input(argv, &input_parameter) == FALSE){
 			printf("Key hat ungueltiges format! Bitte nur integer grösser 0 eingeben!\n");
@@ -55,8 +55,7 @@ int load_file(char *filename, char **buffer){
 	if (NULL == (datei = fopen(filename, "r"))){
 		return -1;
 	}
-	else
-	{
+	else{
 		fseek(datei, 0, SEEK_END);
 		long anzahl_zeichen = ftell(datei);
 		*buffer = malloc((anzahl_zeichen + 1)*sizeof(char));
@@ -64,8 +63,8 @@ int load_file(char *filename, char **buffer){
 		for (int i = 0; i < anzahl_zeichen; i++){
 			(*buffer)[i] = fgetc(datei);
 		}
-		fclose(datei);
 		(*buffer)[anzahl_zeichen] = '\0';
+		fclose(datei);
 		return anzahl_zeichen;
 	}
 }
