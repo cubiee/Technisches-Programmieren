@@ -60,7 +60,7 @@ int save_data(TEILNEHMER *dataset, int teilnehmeranzahl, char *speicherort){
 	int status = TRUE;
 	if(NULL == (save_file = fopen(speicherort, "w"))){
 		status = FALSE;
-		printf("Speicherdatei konnte nciht geöffnet werden!\n");
+		printf("Speicherdatei konnte nicht geöffnet werden!\n");
 	}
 	else{
 		for(int i = 0; i < teilnehmeranzahl; i++){
